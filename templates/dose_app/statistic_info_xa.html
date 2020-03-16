@@ -1,0 +1,341 @@
+{% extends "dose_app/modelo_base.html" %}
+{% load staticfiles %}
+
+{% block head_block_scripts %}
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <!-- Additional files for the Highslide popup effect -->
+    <script src="https://www.highcharts.com/media/com_demo/js/highslide-full.min.js"></script>
+    <script src="https://www.highcharts.com/media/com_demo/js/highslide.config.js" charset="utf-8"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://www.highcharts.com/media/com_demo/css/highslide.css" >
+    <link rel="stylesheet" href="{% static 'dose_app/css/static_info_xa.css' %}" >
+
+{% endblock %}
+
+{% block plotdata %}
+
+    <div class="jumbotron">
+        <h2>Estatísticas sobre os estudos</h2>
+        <h3>Obs: Estatísticas foram feitas utilizando pacientes ja presentes no sistema, não de todos do banco de dados do HUCAM</h3>
+
+    </div>
+
+{% endblock %}
+
+{% block col1 %}
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix" style="cursor:pointer;">
+            <div class="col-md-8"  data-toggle="collapse" href="#chart1">
+                <h4 class="panel-title pull-left">
+                  <text class="accordion-toggle" >Estatística das médias de doses anuais</text>
+                </h4>
+            </div>
+            <form class="form-inline" accept-charset="UTF-8" method="get">
+                {% csrf_token %}
+                <div class="input-group pull-right col-md-4" style="margin-right: -8px">
+                    <input type="text" class="form-control" name='year' style="margin-top:2px" placeholder="{{ year }}"/>
+                    <div class="input-group-btn">
+                        <button class="btn btn-primary" style="margin-top:1.5px" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% if request.GET.year %}
+            <div id="chart1" class="panel-collapse collapse in">
+        {% else %}
+            <div id="chart1" class="panel-collapse collapse">
+        {% endif %}
+
+        <ul class="list-group">
+                  <li class="list-group-item">
+                      <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                  </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block col2 %}
+
+    <div class="panel-group">
+          <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="cursor:pointer;">
+                <div class="col-xs-10" data-toggle="collapse" href="#table1">
+                <h4 class="panel-title pull-left">
+                    <text class="accordion-toggle">Tabela de paciente em caso crítico de exposição</text>
+                </h4>
+                    </div>
+                <form class="form-inline" accept-charset="UTF-8" method="get">
+                    <div class="input-group pull-right col-xs-2">
+                        {% if request.GET.dep_max %}
+                            <input type="text" class="form-control" name='dep_max' style="margin-top:2px" placeholder="DEP: {{ request.GET.dep_max }}">
+                        {% else %}
+                            <input type="text" class="form-control" name='dep_max' style="margin-top:2px" placeholder="DEP: 2000">
+                        {% endif %}
+
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" style="margin-top:1.5px" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+          {% if request.GET.dep_max %}
+                <div id="table1" class="panel-collapse collapse in">
+          {% else %}
+                <div id="table1" class="panel-collapse collapse">
+          {% endif %}
+                  <ul class="list-group">
+                      <li class="list-group-item">
+                          <table class="table table-bordered table-hover small">
+                            <thead>
+                                <tr class="active">
+                                    <th>Nome</th>
+                                    <th>Data de Nascimento</th>
+                                    <th>Sexo</th>
+                                    <th>Número de Estudos</th>
+                                    <th>Produto Dose x Área (μGym²)</th>
+                                    <th>Dose de Entrada na Pele (mGy)</th>
+                                </tr>
+                            </thead>
+                            <tboody>
+                                {% for patient in filtered_data %}
+                                    <tr class="text-center clickable-row" style="cursor: pointer"
+                                        data-href="{% url 'dose_app:detalhes_total' search_name=patient.name_for_URL pk=patient.id type='p'%}">
+                                        <td> {{ patient.name }} </td>
+                                        <td> {{ patient.dob_parsed }} </td>
+                                        <td> {{ patient.sex  }} </td>
+                                        <td> {{ patient.number_of_studies }} </td>
+                                        <td class="warning"> {{ patient.dose_PKA_complete }} </td>
+                                        <td class="warning"> {{ patient.dose_KAPR_complete  }} </td>
+                                    </tr>
+                                {% endfor %}
+                            </tboody>
+
+                            </table>
+                      </li>
+                  </ul>
+                </div>
+          </div>
+    </div>
+
+    <div class="panel-group">
+          <div class="panel panel-default">
+            <div class="panel-heading clearfix" style="cursor:pointer;">
+                <div class="col-xs-6"  data-toggle="collapse" href="#table2">
+                    <h4 class="panel-title pull-left">
+                        <text class="accordion-toggle">Tabela de estatísticas</text>
+                    </h4>
+                </div>
+                <form class="form-inline" accept-charset="UTF-8" method="get">
+                    {% csrf_token %}
+                    <div class="input-group pull-right col-xs-6">
+                        {% if request.GET.date_before and request.GET.date_after %}
+                            <input type="text" class="form-control" name='date_before' style="margin-top:2px" value="{{ request.GET.date_before }}"/>
+                             <span class="input-group-addon" style="padding: 10px;margin: 10px;border: 10px">-</span>
+                            <input type="text" class="form-control" name='date_after' style="margin-top:2px" value="{{ request.GET.date_after }}"/>
+                        {% else %}
+
+                            <div class="input-group datepick">
+                                <input type="text" class="form-control" name='date_before' style="margin-top:1px;margin-bottom:-1px; height:35px;" placeholder="aaaa-mm-dd" required/>
+                                <span class="input-group-addon glyphicon glyphicon-calendar" ></span>
+                            </div>
+
+                            <span class="input-group-addon" style="padding: 10px;margin: 10px;border: 10px">-</span>
+
+                            <div class="input-group datepick">
+                                <input type="text" class="form-control" name='date_after' style="margin-top:1px;margin-bottom:-1px; height:35px;" placeholder="aaaa-mm-dd" required/>
+                                <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" style="margin-top:1.5px" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+          {% if request.GET.date_before and request.GET.date_after %}
+                <div id="table2" class="panel-collapse collapse in">
+          {% else %}
+                <div id="table2" class="panel-collapse collapse">
+          {% endif %}
+                  <ul class="list-group">
+                      <li class="list-group-item">
+                        <table class="table table-bordered table-hover small" id="table_study_statistics">
+                            <thead>
+                                <tr class="active" style="cursor: pointer">
+                                    <th></th>
+                                    <th>Tempo de Fluoroscopia (s) </th>
+                                    <th>Tempo de Aquisição (s) </th>
+                                    <th>PKA Fluoroscopia (μGym²) </th>
+                                    <th>KAPR Fluoroscopia (mGy) </th>
+                                    <th>PKA Aquisição (μGym²) </th>
+                                    <th>KAPR Aquisição (mGy) </th>
+                                    <th>PKA Total (μGym²) </th>
+                                    <th>KAPR Total (mGy) </th>
+                                </tr>
+                            </thead>
+                            <tboody>
+
+                                <tr class="text-center clickable-row" style="cursor: pointer">
+                                    <td>Média</td>
+                                    {% for _, value in stats_by_date.items %}
+                                        <td> {{ value.mean|floatformat:2 }} </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="text-center clickable-row" style="cursor: pointer">
+                                    <td>Mediana</td>
+                                    {% for _, value in stats_by_date.items %}
+                                        <td> {{ value.med|floatformat:2 }} </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="text-center clickable-row" style="cursor: pointer">
+                                    <td>Desvio Padrão</td>
+                                    {% for _, value in stats_by_date.items %}
+                                        <td> {{ value.std|floatformat:2 }} </td>
+                                    {% endfor %}
+                                </tr>
+
+                            </tboody>
+
+                        </table>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+    </div>
+
+    <script>
+    Highcharts.chart('container', {
+      chart: {
+        type: 'column'
+      },
+      title: {
+        text: 'title',
+        style: { "color": "#FFFFFF", "fontSize": "18px" },
+      },
+      subtitle: {
+        text: ''
+      },
+      xAxis: {
+        categories: ['Jan',
+                     'Fev',
+                     'Mar',
+                     'Abr',
+                     'Mai',
+                     'Jun',
+                     'Jul',
+                     'Ago',
+                     'Set',
+                     'Out',
+                     'Nov',
+                     'Dez',
+        ],
+        crosshair: true
+      },
+      yAxis: [{ // left y axis
+            title: {
+              text: 'Gy',
+              x: -10,
+              y:-160,
+              rotation:0,
+            },
+            labels: {
+              align: 'left',
+              x: -35,
+              y: 16,
+              format: '{value:.,0f}'
+            },
+            showFirstLabel: false
+          }, { // right y axis
+            gridLineWidth: 0,
+            opposite: true,
+            title: {
+              text: 'Gym²',
+              x: 15,
+              y:-160,
+              rotation:0,
+            },
+            labels: {
+              align: 'right',
+              x: 45,
+              y: 16,
+              format: '{value:.,0f}'
+            },
+            showFirstLabel: false
+          }],
+      tooltip: {
+        formatter: function () {
+            var s = '<b>'+ this.x +'</b>';
+            var chart = this.points[0].series.chart; //get the chart object
+            var categories = chart.xAxis[0].categories; //get the categories array
+            var index = 0;
+            while(this.x !== categories[index]){index++;} //compute the index of corr y value in each data arrays
+            $.each(chart.series, function(i, series) { //loop through series array
+                s += '<br/>'+ series.name +': ' +
+                    series.data[index].y ;     //use index to get the y value
+            });
+        return s;
+        },
+        shared: true,
+        crosshairs: true
+          },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    align: 'right',
+                    y: 350
+                }
+            }
+        },
+      series: [{
+            name: 'Dose de entrada na pele (mGy)',
+            data: {{ est_KAPR_total }},
+            lineWidth: 4,
+            yAxis: 0,
+            marker: {
+              radius: 4
+            }
+          },
+          {
+            name: 'Produto dose área (μGym²)',
+            data: {{ est_PKA_total }},
+            lineWidth: 4,
+            yAxis: 1,
+            marker: {
+              radius: 4
+            }
+          },
+          {
+              name: 'Número de Pacientes',
+              data: {{ patient_month }},
+              visible: false,
+              showInLegend: false
+          },
+          {
+              name: 'Número de Estudos',
+              data: {{ study_month }},
+              visible: false,
+              showInLegend: false
+          }]
+        });
+    </script>
+
+    <div style="background:transparent !important" class="jumbotron">
+        <a href="{% url 'dose_app:index'%}" style="width: 200px" class="btn btn-danger center-block btn-lg">Voltar</a>
+    </div>
+
+{% endblock %}
+
+{% block col-lateral %}
+
+{% endblock %}
+

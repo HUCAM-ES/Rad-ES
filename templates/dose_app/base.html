@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HUCAM Doses</title>
+
+    <!---*** Start: JQuery 3.3.1 version. ***--->
+    <script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!---*** End: JQuery 3.3.1 version. ***--->
+    <!---*** Start: Bootstrap 3.3.7 version files. ***--->
+    <script language="javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!---*** End: Bootstrap 3.3.7 version files. ***--->
+
+    <script language="javascript" src="https://momentjs.com/downloads/moment.js"></script>
+    <script language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/css/bootstrap-datetimepicker.min.css">
+
+    {% block head_block %}
+    {% endblock %}
+
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <ul class="nav navbar-nav">
+
+                {# HUCAM Doses Pagina Principal / Pesquisa / Informações Gerais / Sobre / Configuracoes #}
+                <li> <a class="navbar-brand" href="{%  url 'dose_app:index' %}">
+                    <img src="{%  static "dose_app/images/logo_hucam_radioprotecao.png" %}" alt="Missing_FILE" style="padding:-5px;margin:-10px;width:63px;height:42px;">
+                </a> </li>
+                <li> <a class="navbar-link" href="{%  url 'dose_app:pesquisa' %}">Pesquisa</a> </li>
+                <li> <a class="navbar-link" href="{%  url 'dose_app:info_estatisticas' %}">Informações Estatísticas</a> </li>
+                <li> <a class="navbar-link" href="{%  url 'dose_app:sobre' %}">Sobre</a> </li>
+                <li> <a class="navbar-link" href="{%  url 'dose_app:config' %}">Configurações</a> </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+    {% block body_block %}
+    {% endblock %}
+    </div>
+
+
+</body>
+</html>

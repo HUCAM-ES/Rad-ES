@@ -1,0 +1,44 @@
+{% extends "dose_app/modelo_base.html" %}
+{% load staticfiles %}
+{% block col1 %}
+
+    <div class="jumbotron">
+        <form accept-charset="UTF-8" method="post" style="padding-top: 5px" onsubmit="$('#target').toggle();">
+            {% csrf_token %}
+            <h1 style="font-size: 400%; margin-top: -20px"> Bem vindo ao site de pesquisa de doses do HUCAM </h1>
+            <div style="text-align:justify;">
+                <h3> Para pesquisar sobre dados entre na aba de Pesquisa</h3>
+                <h3> Para saber mais sobre o site entre em Sobre</h3>
+                <span class="hr" style="display: block;flex: 1;height: 3px;background: #D4D4D4;"></span>
+                <h3><b>Atualizar Site:</b></h3>
+
+            </div>
+                <div class="custom-control custom-radio">
+                  <input type="radio" class="custom-control-input" id="radioDesdeInicio" checked name="radioDatabaseUpd">
+                  <label class="custom-control-label" for="radioDesdeInicio" style="margin-top: -1px;vertical-align: middle;">Desde Início</label>
+
+                  <input type="radio" class="custom-control-input" id="radioData" name="radioDatabaseUpd" style="margin-left: 10px">
+                  <input type="text" class="form-control" name='radioDataInput' style="width:105px; height:30px; display:inline" placeholder="aaaa-mm-dd" autocomplete="off"/>
+                </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                <input class="btn btn-primary" type="submit" value="Atualizar Banco de Dados" name="btn_db_update" style="padding:8px; margin-top:10px; width:180px"/>
+                </div>
+                <div class="col-md-5"></div>
+                <div class="col-md-3">
+                <input class="btn btn-warning" type="submit" value="Atualizar Programa" name="btn_prog_update"
+                       style="padding:8px;margin-left:42px;margin-top:10px; width:180px"/>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    {# <a href={%  url 'dose_app:test' %}>clicke aqui</a> #}
+
+{% endblock %}
+
+{% block col-lateral %}
+    <img src="{%  static "dose_app/images/logo_radioprotecao.png" %}" alt="Missing_FILE" style="height: 150%;width: 150%;margin-left: -20px">
+    <img src="{%  static "dose_app/images/HUCAm.png" %}" alt="Missing_FILE" style="height: 110%;width: 110%;margin-left: 30px; margin-top: 40px">
+{% endblock %}

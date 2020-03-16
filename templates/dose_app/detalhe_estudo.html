@@ -1,0 +1,33 @@
+{% extends "dose_app/modelo_base.html" %}
+
+{% block head_block %}
+{%  endblock %}
+
+{% block col1 %}
+
+    <div class="jumbotron">
+        <h2>Pagina de Detalhes de Estudo</h2>
+        <h2>Detalhes:</h2>
+        <p>Numero de ID: {{xa_details.id}}</p>
+        <p>Nome: {{xa_details.patient.name}}</p>
+        <p>Data do Estudo: {{xa_details.study_date_parsed}}</p>
+
+        <p>Tempo total de Fluorograma (s): {{xa_details.fluoro_time_total}}</p>
+        <p>Tempo total de Aquisição (s): {{xa_details.acq_time_total}}</p>
+
+        <p>Produto Dose x Área (μGym²) - Fluorograma: {{xa_details.fluoro_PKA_total}}</p>
+        <p>Dose de Entrada na Pele (mGy) - Fluorograma: {{xa_details.fluoro_KAPR_total}}</p>
+
+        <p>Produto Dose x Área (μGym²) - Aquisição: {{xa_details.acq_PKA_total}}</p>
+        <p>Dose de Entrada na Pele (mGy) - Aquisição: {{xa_details.acq_KAPR_total}}</p>
+
+        <p>Produto Dose x Área (μGym²) - Total: {{xa_details.dose_PKA_total}}</p>
+        <p>Dose de Entrada na Pele (mGy) - Total: {{xa_details.dose_KAPR_total}}</p>
+
+    </div>
+
+    <div style="background:transparent !important" class="jumbotron">
+        <a href="{{ request.META.HTTP_REFERER }}" style="width: 200px" class="btn btn-danger center-block btn-lg">Voltar</a>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "dose_app/detalhe_estudo_total.html" %}
+
+{% block back_button %}
+<div style="background:transparent !important" class="jumbotron">
+    <a href="{% url 'dose_app:lista_data' date_before=view.kwargs.date_before date_after=view.kwargs.date_after %}" style="width: 200px" class="btn btn-danger center-block btn-lg">Voltar</a>
+</div>
+{% endblock %}

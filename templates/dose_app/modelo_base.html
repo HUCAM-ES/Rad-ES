@@ -1,0 +1,70 @@
+{% extends "dose_app/base.html" %}
+
+{% block head_block %}
+
+    {% block head_block_scripts %}
+    {% endblock %}
+
+    <script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+    </script>
+
+    <script>
+    $( function() {
+    $( ".datepick" ).datetimepicker({
+        format: 'YYYY-MM-DD',
+        ignoreReadonly: true
+    });
+    });
+    </script>
+
+    <script>
+    if ($(".progress-bar").Percentage() == "100%" ){
+     $('.progress-bar').fadeOut('fast');
+    }
+    </script>
+
+    <script>
+    $(function() {
+      var current_progress = 0;
+      var interval = setInterval(function() {
+          current_progress += 10;
+          $("#dynamic")
+          .css("width", current_progress + "%")
+          .attr("aria-valuenow", current_progress)
+          .text(current_progress + "%");
+          if (current_progress >= 100)
+              clearInterval(interval);
+      }, 1000);
+    });
+    </script>
+
+{% endblock %}
+
+{% block body_block %}
+
+      <div class="row">
+
+        <div class="col-md-9">
+          {% block plotdata %}
+          {% endblock %}
+
+          {% block col1 %}
+          {% endblock %}
+
+          {% block col2 %}
+          {% endblock %}
+        </div>
+
+        <div class="col-md-3">
+          {% block col-lateral %}
+          {% endblock %}
+        </div>
+
+      </div>
+
+{% endblock %}

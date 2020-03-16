@@ -1,0 +1,5 @@
+{% extends "dose_app/lista_estudos.html" %}
+
+{% block date_link %}
+<a class="list-group-item list-group-item-action list-group-item-info" href="{% url 'dose_app:detalhes_total_data' date_before=view.kwargs.date_before date_after=view.kwargs.date_after pk=patient.id type='p'%}">Todos os estudos</a>
+{% endblock %}

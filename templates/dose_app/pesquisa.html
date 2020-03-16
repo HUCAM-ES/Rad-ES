@@ -1,0 +1,90 @@
+{% extends "dose_app/base.html" %}
+{% load staticfiles %}
+
+{% block head_block %}
+
+    <link rel="stylesheet" href="{% static 'dose_app/css/pesquisa.css' %}" >
+
+    <script>
+    $( function() {
+    $( ".datepick" ).datetimepicker({
+        format: 'YYYY-MM-DD',
+        ignoreReadonly: true
+    });
+    });
+    </script>
+
+{% endblock %}
+
+{% block body_block %}
+
+    <div class="jumbotron">
+
+    <h2>Insira um nome:</h2>
+
+    <form accept-charset="UTF-8" method="post" style="padding-top: 5px" onsubmit="$('#target').toggle();">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-5">
+                {{ form.as_p }}
+            </div>
+            <div class="col-md-7">
+                <div class="loader" id="target" style="display:none"></div>
+            </div>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Pesquisar" name="btn_name" style="padding:8px; margin-top:10px"/>
+    </form>
+
+    </div>
+     <div class="jumbotron">
+
+    <h2>Insira uma data:</h2>
+
+    <form accept-charset="UTF-8" method="post" style="padding-top: 5px" onsubmit="$('#target2').toggle();">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-5" style="padding-left: 15px">
+                <div class="input-group">
+                    {% if request.GET.date_before and request.GET.date_after %}
+
+                        <div class="input-group datepick">
+                            <input type="text" class="form-control" name='date_before' style="margin-top:1px;margin-bottom:-1px; height:35px;" value="{{ request.GET.date_before }}" autocomplete="off"/>
+                            <span class="input-group-addon glyphicon glyphicon-calendar" ></span>
+                        </div>
+
+                         <span class="input-group-addon" style="padding: 10px;margin: 10px;border: 10px">-</span>
+
+                        <div class="input-group datepick">
+                            <input type="text" class="form-control" name='date_after' style="margin-top:1px;margin-bottom:-1px; height:35px;" value="{{ request.GET.date_after }}" autocomplete="off"/>
+                            <span class="input-group-addon glyphicon glyphicon-calendar" ></span>
+                        </div>
+
+                    {% else %}
+
+                        <div class="input-group datepick">
+                            <input type="text" class="form-control" name='date_before' style="margin-top:1px;margin-bottom:-1px; height:35px;" placeholder="aaaa-mm-dd" required autocomplete="off"/>
+                            <span class="input-group-addon glyphicon glyphicon-calendar" ></span>
+                        </div>
+
+                        <span class="input-group-addon" style="padding: 10px;margin: 10px;border: 10px">-</span>
+
+                        <div class="input-group datepick">
+                            <input type="text" class="form-control" name='date_after' style="margin-top:1px;margin-bottom:-1px; height:35px;" placeholder="aaaa-mm-dd" required autocomplete="off"/>
+                            <span class="input-group-addon glyphicon glyphicon-calendar" ></span>
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="loader" id="target2" style="display:none; margin-top:4px"></div>
+            </div>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Pesquisar" name="btn_date"  style="padding:8px; margin-top:10px" />
+    </form>
+
+    </div>
+    <div style="background:transparent !important" class="jumbotron">
+    <a href="{% url 'dose_app:index' %}" style="width: 200px" class="btn btn-danger center-block btn-lg">Voltar</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,265 @@
+{% extends "dose_app/modelo_base.html" %}
+
+{% block plotdata %}
+
+    <div class="jumbotron" >
+        <h2>Detalhamento de Estudos</h2>
+    </div>
+
+{% endblock %}
+
+{% block col1 %}
+
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, direc, switchcount = 0;
+  table = document.getElementById("table_study_details");
+  switching = true;
+  // Set the sorting direction to ascending:
+
+  if(document.getElementsByTagName("span")[n].className === "glyphicon glyphicon-chevron-down"){
+      direc = "asc";
+      document.getElementsByTagName("span")[n].className = "glyphicon glyphicon-chevron-up";
+  } else {
+      direc = "desc";
+      document.getElementsByTagName("span")[n].className = "glyphicon glyphicon-chevron-down";
+  }
+
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /* Loop through all table rows (except the
+    first, which contains table headers): */
+    for (i = 1; i < (rows.length - 2); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Get the two elements you want to compare,
+      one from current row and one from the next: */
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+
+      /* Check if the two rows should switch place,
+      based on the direction, asc or desc: */
+      if (direc === "asc") {
+        if (Number(x.innerHTML) > Number(y.innerHTML)) {
+          // If so, mark as a switch and break the loop:
+
+          shouldSwitch = true;
+          break;
+        }
+      } else if (direc === "desc") {
+        if (Number(x.innerHTML) < Number(y.innerHTML)) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /* If a switch has been marked, make the switch
+      and mark that a switch has been done: */
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      // Each time a switch is done, increase this count by 1:
+      switchcount ++;
+    } else {
+      /* If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again. */
+      console.log(switchcount, direc)
+    }
+  }
+}
+</script>
+
+
+    <table class="table table-bordered table-hover small" id="table_study_details">
+        <thead>
+            <tr class="active" style="cursor: pointer">
+                <th onclick="sortTable(0)" style="text-align: center;vertical-align: middle;">Data <span class="glyphicon glyphicon-chevron-up" id="chev_0" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(1)" style="text-align: center;vertical-align: middle;">Nome <span class="glyphicon glyphicon-chevron-up" id="chev_1" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(2)" style="text-align: center;vertical-align: middle;">Institução <span class="glyphicon glyphicon-chevron-up" id="chev_2" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(3)" style="text-align: center;vertical-align: middle;">Tempo de Fluoroscopia (s) <span class="glyphicon glyphicon-chevron-up" id="chev_3" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(4)" style="text-align: center;vertical-align: middle;">Tempo de Aquisição (s) <span class="glyphicon glyphicon-chevron-up" id="chev_4" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(5)" style="text-align: center;vertical-align: middle;">PKA Fluoroscopia (μGym²) <span class="glyphicon glyphicon-chevron-up" id="chev_5" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(6)" style="text-align: center;vertical-align: middle;">KAPR Fluoroscopia (mGy) <span class="glyphicon glyphicon-chevron-up" id="chev_6" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(7)" style="text-align: center;vertical-align: middle;">PKA Aquisição (μGym²) <span class="glyphicon glyphicon-chevron-up" id="chev_7" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(8)" style="text-align: center;vertical-align: middle;">KAPR Aquisição (mGy) <span class="glyphicon glyphicon-chevron-up" id="chev_8" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(9)" style="text-align: center;vertical-align: middle;">PKA Total (μGym²) <span class="glyphicon glyphicon-chevron-up" id="chev_9" style="font-size: 8px"></span></th>
+                <th onclick="sortTable(10)" style="text-align: center;vertical-align: middle;">KAPR Total (mGy) <span class="glyphicon glyphicon-chevron-up" id="chev_10" style="font-size: 8px"></span></th>
+            </tr>
+        </thead>
+        <tboody>
+            {% for patient_study in filtered_data %}
+                <tr class="text-center clickable-row" style="cursor: pointer"
+                    data-href="{% url 'dose_app:detalhes' pk=patient_study.patient.id ppk=patient_study.id %}">
+                    <td> {{ patient_study.study_date_parsed }} </td>
+                    <td> {{ patient_study.patient.name }} </td>
+                    <td> {{ patient_study.institution }} </td>
+                    <td> {{ patient_study.fluoro_time_total }} </td>
+                    <td> {{ patient_study.acq_time_total }} </td>
+                    <td> {{ patient_study.fluoro_PKA_total }} </td>
+                    <td> {{ patient_study.fluoro_KAPR_total }} </td>
+                    <td> {{ patient_study.acq_PKA_total }} </td>
+                    <td> {{ patient_study.acq_KAPR_total }} </td>
+                    <td class="warning"> {{ patient_study.dose_PKA_total }} </td>
+                    <td class="warning"> {{ patient_study.dose_KAPR_total }} </td>
+
+                </tr>
+            {% endfor %}
+        </tboody>
+        <tfoot>
+            <tr class="bg-info">
+                <td colspan="3"> Total </td>
+                <td class=" text-center"> {{ sum_total_filtered.ftt }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.att }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.fat }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.frt }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.aat }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.art }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.dat }} </td>
+                <td class=" text-center"> {{ sum_total_filtered.drt }} </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="panel-default">
+        <div class="panel-heading clearfix" style="cursor:pointer;">
+            <h3 class="panel-title pull-left">
+                <text>Dados Estatísticos</text>
+            </h3>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover small" id="table_study_statistics">
+        <thead>
+            <tr class="active" style="cursor: pointer">
+                <th></th>
+                <th>Tempo de Fluoroscopia (s) </th>
+                <th>Tempo de Aquisição (s) </th>
+                <th>PKA Fluoroscopia (μGym²) </th>
+                <th>KAPR Fluoroscopia (mGy) </th>
+                <th>PKA Aquisição (μGym²) </th>
+                <th>KAPR Aquisição (mGy) </th>
+                <th>PKA Total (μGym²) </th>
+                <th>KAPR Total (mGy) </th>
+            </tr>
+        </thead>
+        <tboody>
+
+            <tr class="text-center clickable-row" style="cursor: pointer">
+                <td>Média</td>
+                {% for _, value in stats_by_date.items %}
+                    <td> {{ value.mean|floatformat:2 }} </td>
+                {% endfor %}
+            </tr>
+            <tr class="text-center clickable-row" style="cursor: pointer">
+                <td>Mediana</td>
+                {% for _, value in stats_by_date.items %}
+                    <td> {{ value.med|floatformat:2 }} </td>
+                {% endfor %}
+            </tr>
+            <tr class="text-center clickable-row" style="cursor: pointer">
+                <td>Desvio Padrão</td>
+                {% for _, value in stats_by_date.items %}
+                    <td> {{ value.std|floatformat:2 }} </td>
+                {% endfor %}
+            </tr>
+
+        </tboody>
+
+    </table>
+
+    {% block back_button %}
+    <div style="background:transparent !important" class="jumbotron">
+        <a href="{{ return_link }}" style="width: 200px" class="btn btn-danger center-block btn-lg">Voltar</a>
+    </div>
+    {% endblock %}
+
+{% endblock %}
+
+{% block col-lateral %}
+
+
+    <form action="" method="get" class="form-horizontal" role="form">
+        {% csrf_token %}
+        <div class="panel panel-info small">
+            <div class="panel-heading">
+                <h3 class="panel-title">Filtro de Exames</h3>
+            </div>
+            <div class="panel-body">
+
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>Data Inicial:</label>
+                        </div>
+                        <div class="input-group datepick col-xs-7">
+                            <input type="text" class="form-control" name="date_before" id="date_between_0" value="{{ request.GET.date_before }}" required readonly>
+                          <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>Data Final:</label>
+                        </div>
+                        <div class="input-group datepick col-xs-7">
+                            <input type="text" class="form-control" name="date_after" id="date_between_1" value="{{ request.GET.date_after }}" required readonly>
+                          <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>Produto K-A Total Máximo:</label>
+                        </div>
+                        <div class="input-group col-xs-7">
+                          <input type="text" class="form-control" name="PKA_tot_max" id="PKA_tot_between_0" value="{{ request.GET.PKA_tot_max }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>Produto K-A Total Mínimo:</label>
+                        </div>
+                        <div class="input-group col-xs-7">
+                          <input type="text" class="form-control" name="PKA_tot_min" id="PKA_tot_between_1" value="{{ request.GET.PKA_tot_min }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>Kerma no Ár Total Máximo:</label>
+                        </div>
+                        <div class="input-group col-xs-7">
+                          <input type="text" class="form-control" name="KAPR_tot_max" id="KAPR_tot_between_0" value="{{ request.GET.KAPR_tot_max }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>Kerma no Ár Total Mínimo:</label>
+                        </div>
+                        <div class="input-group col-xs-7">
+                          <input type="text" class="form-control" name="KAPR_tot_min" id="KAPR_tot_between_1" value="{{ request.GET.KAPR_tot_min }}">
+                        </div>
+                    </div>
+
+
+                    <input class="btn btn-default btn-primary" type="submit" value="Filtrar">
+                    <a href="{{ request.path }}" class="btn btn-warning pull-right">Limpar Filtros</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="jumbotron" style="padding: 15px">
+        <h5>Legendas: </h5>
+        <p style="font-size:95%; margin-top: 0px"><sub>* PKA: Produto Kerma-Área </sub></p>
+        <p style="font-size:95%; margin-top: 0px"><sub>* KAPR: Kerma no Ar no Ponto de Referência </sub></p>
+    </div>
+
+{% endblock %}

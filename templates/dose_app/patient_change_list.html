@@ -1,0 +1,36 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools-items %}
+    <style>
+    #object-tools-items_css {
+        display: block;
+        float: left;
+        padding: 3px 12px;
+        background: #999;
+        font-weight: 400;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #fff;
+        border-radius: 15px;
+        border: 0px;
+        text-decoration: none;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    #object-tools-items_css:hover{
+        background: #447e9b;
+    }
+    </style>
+
+    <li>
+        <form action="sendEmail/" method="POST">
+            {% csrf_token %}
+          <button type='submit' id="object-tools-items_css">
+            Send e-mail with Patients in Alert
+          </button>
+        </form>
+        </li>
+
+    {{ block.super }}
+{% endblock %}

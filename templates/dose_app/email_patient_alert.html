@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<style>
+    table, th, td {
+    border: 1px solid black;
+    text-align: center;
+}
+</style>
+
+<table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Data de nascimento</th>
+                <th>Kerma no ar (mGy)</th>
+                <th>Produto kerma-área (µGym²)</th>
+                <th>Número de estudos</th>
+            </tr>
+        </thead>
+        <tboody>
+            {% for patient in qs %}
+                <tr>
+                    <td> {{ patient.name }} </td>
+                    <td> {{ patient.dob_parsed }} </td>
+                    <td> {{ patient.dose_KAPR_complete }} </td>
+                    <td> {{ patient.dose_PKA_complete }} </td>
+                    <td> {{ patient.number_of_studies }} </td>
+                </tr>
+            {% endfor %}
+        </tboody>
+
+    </table>
+
+
+</body>
+</html>

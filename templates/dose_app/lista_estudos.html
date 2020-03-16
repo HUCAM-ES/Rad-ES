@@ -1,0 +1,135 @@
+{% extends "dose_app/base.html" %}
+{% load staticfiles %}
+
+
+{% block head_block %}
+    <link rel="stylesheet" href="{% static 'dose_app/css/lista_estudos.css' %}" >
+    <script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+    </script>
+    <script>
+    $(function(){
+      $(".not-clickable-cell").click(function(event) {
+       event.stopPropagation();
+    });
+    });
+    </script>
+{%  endblock %}
+
+{% block body_block %}
+
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#home">Lista por Paciente</a></li>
+      <li><a data-toggle="tab" href="#menu1">Lista por Estudo</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade in active">
+        <form action="" method="post">
+           {% csrf_token %}
+            <div class="jumbotron">
+                <div class="row">
+                    <div ><h2 class="col-md-10" style="margin-top:-10px; margin-bottom: 20px">Resultados obtidos: </h2></div>
+                </div>
+                <div class="row">
+                    <div ><label class="col-md-8">Nome - Data de nascimento </label></div>
+                    <div ><label class="col-md-2">Número de estudos </label></div>
+                    <div ><label class="col-md-1" >Agrupar</label></div>
+                    <div ><label class="col-md-1" >Deletar</label></div>
+                </div>
+
+
+                {% for patient in patient_list %}
+                    <div class="row">
+                      <div class="panel-group col-xs-10">
+                      <div class="panel panel-default">
+                        <div class="panel-heading" style="cursor:pointer;">
+                          <h4 class="panel-title">
+                              <text class="accordion-toggle" data-toggle="collapse" href="#{{ patient.id }}">{{patient.name}} - {{ patient.dob_parsed }} <span style="float: right">{{ patient.number_of_studies }}</span></text>
+                          </h4>
+                        </div>
+                        <div id="{{ patient.id }}" class="panel-collapse collapse">
+                          <ul class="list-group" style="cursor:pointer;">
+                              {% for patient_study in patient.xa_studies.all %}
+                                  <a class="list-group-item list-group-item-action" href="{% url 'dose_app:detalhes' pk=patient.id ppk=patient_study.id %}">{{ patient_study.study_date_parsed }} | Dose total: {{ patient_study.dose_KAPR_total }} mGy & {{ patient_study.dose_PKA_total }} μGym²</a>
+                              {% endfor %}
+                              {% block date_link %}
+                              <a class="list-group-item list-group-item-action list-group-item-info" href="{% url 'dose_app:detalhes_total' search_name=view.kwargs.search_name pk=patient.id type='p'%}">Todos os estudos</a>
+                              {% endblock %}
+                          </ul>
+                        </div>
+                      </div>
+                      </div>
+
+                    <div><label class="checkbox-inline col-xs-1" style="padding-left:55px"><input type="checkbox" name="group_checkboxes" value="{{ patient.id }}"></label></div>
+                    <div><label class="checkbox-inline col-xs-1" style="padding-left:50px"><input type="checkbox" name="delete_checkboxes" value="{{ patient.id }}"></label></div>
+
+                    </div>
+               {% endfor %}
+            <div class="row">
+                <div class="col-xs-10"></div>
+                <div class="col-xs-1"><input style="padding-left:15px;padding-right:15px;margin-left:7px" type="submit" value="A" name="group" class="btn btn-xs btn-primary"></div>
+                <div class="col-xs-1"><input style="padding-left:15px;padding-right:15px;margin-left:2px" type="submit" value="D" name="delete" class="btn btn-xs btn-danger"></div>
+
+            </div>
+            </div>
+       </form>
+      </div>
+
+      <div id="menu1" class="tab-pane fade">
+        <form action="" method="post">
+        {% csrf_token %}
+        <div class="jumbotron">
+            <div class="row">
+                <div ><h2 class="col-md-12" style="margin-top: -10px">Resultados obtidos: </h2></div>
+            </div>
+        <table class="table table-bordered table-hover small" id="table_list_view">
+            <thead>
+            <tr>
+                <th style="text-align: center;vertical-align: middle;">DATA DO ESTUDO</th>
+                <th style="text-align: center;vertical-align: middle;">HORA DO ESTUDO</th>
+                <th style="text-align: center;vertical-align: middle;">NOME DO PACIENTE</th>
+                <th style="text-align: center;vertical-align: middle;">DATA DE NASCIMENTO</th>
+                <th style="text-align: center;vertical-align: middle;">PKA TOTAL</th>
+                <th style="text-align: center;vertical-align: middle;">KAPR TOTAL</th>
+                <th style="text-align: center;vertical-align: middle;">AGRUPAR</th>
+                <th style="text-align: center;vertical-align: middle;padding:5px">DELETAR</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for study in study_list %}
+                <tr class="text-center clickable-row" style="cursor: pointer" data-href="{% url 'dose_app:detalhes' pk=study.patient.id ppk=study.id %}"></a>
+                    <td>{{ study.study_date_parsed }}</td>
+                    <td>{{ study.study_time_parsed }}</td>
+                    <td>{{ study.patient.name }}</td>
+                    <td>{{ study.patient.dob_parsed }}</td>
+                    <td>{{ study.dose_PKA_total }}</td>
+                    <td>{{ study.dose_KAPR_total }}</td>
+
+                    <td style="text-align: center" class="not-clickable-cell"><input type="checkbox" name="group_checkboxes_study" value="{{ study.id }}"></td>
+                    <td style="text-align: center" class="not-clickable-cell"><input type="checkbox" name="delete_checkboxes_study" value="{{ study.id }}"></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+       </table>
+        <div class="row">
+            <div class="col-xs-10"></div>
+            <div class="col-xs-1"><input style="padding-left:15px;padding-right:15px;margin-left:7px" type="submit" value="A" name="group" class="btn btn-xs btn-primary"></div>
+            <div class="col-xs-1"><input style="padding-left:15px;padding-right:15px;margin-left:2px" type="submit" value="D" name="delete" class="btn btn-xs btn-danger"></div>
+
+        </div>
+        </div>
+      </form>
+      </div>
+
+    </div>
+
+    <div style="background:transparent !important" class="jumbotron">
+    <a href="{% url 'dose_app:pesquisa' %}" style="width: 200px" class="btn btn-danger center-block btn-lg">Voltar</a>
+    </div>
+
+{% endblock %}
